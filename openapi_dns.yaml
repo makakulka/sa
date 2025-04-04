@@ -1,0 +1,218 @@
+openapi: 3.0.0
+info:
+  title: Order API
+  version: 1.0.0
+  description: API для управления заказами
+paths:
+  /api/v1/order/checkout:
+    post:
+      summary: Оформление заказа
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                cartItems:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      productId:
+                        type: integer
+                        description: ID продукта
+                        example: 123
+                      quantity:
+                        type: integer
+                        description: Количество
+                        example: 2
+                    required:
+                      - productId
+                      - quantity
+                  description: Список товаров в корзине
+                deliveryAddress:
+                  type: object
+                  properties:
+                    street:
+                      type: string
+                      description: Улица
+                      example: Ленина, 10
+                    city:
+                      type: string
+                      description: Город
+                      example: Москва
+                    postalCode:
+                      type: string
+                      description: Почтовый индекс
+                      example: '123456'
+                  required:
+                    - street
+                    - city
+                    - postalCode
+                  description: Адрес доставки
+                paymentMethod:
+                  type: string
+                  description: Способ оплаты
+                  example: card
+                userId:
+                  type: integer
+                  description: ID пользователя
+                  example: 45
+              required:
+                - cartItems
+                - deliveryAddress
+                - paymentMethod
+                - userId
+      responses:
+        '200':
+          description: Успешный ответ
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  orderId:
+                    type: integer
+                    description: ID заказа
+                    example: 9876
+                  status:
+                    type: string
+                    description: Статус заказа
+                    example: success
+                  totalAmount:
+                    type: number
+                    description: Общая сумма заказа
+                    example: 2499.99
+                  estimatedDeliveryDate:
+                    type: string
+                    description: Предполагаемая дата доставки
+                    format: date
+                    example: '2024-12-20'
+                required:
+                  - orderId
+                  - status
+                  - totalAmount
+        '400':
+          description: Ошибка валидации входных данных
+        '500':
+          description: Внутренняя ошибка сервера
+  /api/v1/order/details:
+    get:
+      summary: Получение информации о заказе
+      parameters:
+        - name: orderId
+          in: query
+          required: true
+          schema:
+            type: integer
+          description: ID заказа
+          example: 9876
+      responses:
+        '200':
+          description: Успешный ответ
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  orderId:
+                    type: integer
+                    description: ID заказа
+                    example: 9876
+                  items:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        productId:
+                          type: integer
+                          description: ID продукта
+                          example: 123
+                        name:
+                          type: string
+                          description: Название продукта
+                          example: Смартфон XYZ
+                        quantity:
+                          type: integer
+                          description: Количество
+                          example: 2
+                        price:
+                          type: number
+                          description: Цена за единицу
+                          example: 499.99
+                      required:
+                        - productId
+                        - name
+                        - quantity
+                        - price
+                    description: Список товаров в заказе
+                  totalAmount:
+                    type: number
+                    description: Общая сумма заказа
+                    example: 2499.99
+                  status:
+                    type: string
+                    description: Статус заказа
+                    example: shipped
+                  estimatedDeliveryDate:
+                    type: string
+                    description: Предполагаемая дата доставки
+                    format: date
+                    example: '2024-12-20'
+                required:
+                  - orderId
+                  - items
+                  - totalAmount
+                  - status
+        '404':
+          description: Заказ не найден
+        '500':
+          description: Внутренняя ошибка сервера
+  /api/v1/orders/user:
+    get:
+      summary: Получение информации по всем заказам пользователя
+      parameters:
+        - name: userId
+          in: query
+          required: true
+          schema:
+            type: integer
+          description: ID пользователя
+          example: 45
+      responses:
+        '200':
+          description: Успешный ответ
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    orderId:
+                      type: integer
+                      description: ID заказа
+                      example: 9876
+                    totalAmount:
+                      type: number
+                      description: Общая сумма заказа
+                      example: 2499.99
+                    status:
+                      type: string
+                      description: Статус заказа
+                      example: completed
+                    createdDate:
+                      type: string
+                      description: Дата создания заказа
+                      format: date
+                      example: '2024-12-10'
+                  required:
+                    - orderId
+                    - totalAmount
+                    - status
+                    - createdDate
+        '404':
+          description: Пользователь или заказы не найдены
+        '500':
+          description: Внутренняя ошибка сервера
