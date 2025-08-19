@@ -1,0 +1,14 @@
+ 
+@startuml
+left to right direction
+skinparam packageStyle rectangle
+
+actor "Участник" as U
+actor "Сотрудник" as E
+rectangle "СДО" as LMS
+rectangle "Active Directory" as AD
+rectangle "Почтовая служба" as Mail
+rectangle "Система аутентификации\nи авторизации" as AuthSystem
+
+
+@enduml
